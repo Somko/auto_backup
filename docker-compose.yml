@@ -1,0 +1,15 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.4
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+  odoo:
+    build: .
+    ports:
+      - 80:8069
+    links:
+      - db
+    volumes:
+    - ./auto_backup:/mnt/extra-addons/auto_backup
