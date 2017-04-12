@@ -34,6 +34,8 @@ import logging
 
 try:
     import pysftp
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
 except ImportError:
     raise ImportError('This module needs pysftp to automaticly write backups to the FTP through SFTP. Please install pysftp on your system. (sudo pip install pysftp)')
 
@@ -41,6 +43,7 @@ from odoo import models, fields, api, tools, _
 from odoo.exceptions import Warning
 
 _logger = logging.getLogger(__name__)
+
 
 def execute(connector, method, *args):
     res = False
@@ -51,6 +54,7 @@ def execute(connector, method, *args):
     return res
 
 addons_path = tools.config['addons_path'] + '/auto_backup/DBbackups'
+
 
 class db_backup(models.Model):
     _name = 'db.backup'
@@ -73,11 +77,12 @@ class db_backup(models.Model):
     name = fields.Char('Database', size=100, required=True, help='Database you want to schedule backups for', default=_get_db_name)
     folder = fields.Char('Backup Directory', size=100, help='Absolute path for storing the backups', required='True', default='/odoo/backups')
     backup_type = fields.Selection([('zip', 'Zip'), ('dump', 'Dump')], 'Backup Type', required=True, default='zip')
+    store_type = fields.Selection([('local', 'Local'), ('sftp', 'SFTP'), ('samba', 'Windows share')], default="local", required=True)
     autoremove = fields.Boolean('Auto. Remove Backups', help='If you check this option you can choose to automaticly remove the backup after xx days')
     days_to_keep = fields.Integer('Remove after x days', help="Choose after how many days the backup should be deleted. For example:\nIf you fill in 5 the backups will be removed after 5 days.", required=True)
                    
     # Columns for external server (SFTP)
-    sftp_write = fields.Boolean('Write to external server with sftp', help="If you check this option you can specify the details needed to write to a remote server with SFTP.")
+    # sftp_write = fields.Boolean('Write to external server with sftp', help="If you check this option you can specify the details needed to write to a remote server with SFTP.")
     sftp_path = fields.Char('Path external server', help='The location to the folder where the dumps should be written to. For example /odoo/backups/.\nFiles will then be written to /odoo/backups/ on your remote server.')
     sftp_host = fields.Char('IP Address SFTP Server', help='The IP address from your remote server. For example 192.168.0.1')
     sftp_port = fields.Integer('SFTP Port', help='The port on the FTP server that accepts SSH/SFTP calls.', default=22)
@@ -115,7 +120,8 @@ class db_backup(models.Model):
                 usernameLogin = rec.sftp_user
                 passwordLogin = rec.sftp_password
                 #Connect with external server over SFTP, so we know sure that everything works.
-                srv = pysftp.Connection(host=ipHost, username=usernameLogin, password=passwordLogin,port=portHost)
+                srv = pysftp.Connection(host=ipHost, username=usernameLogin, password=passwordLogin,
+                                        port=portHost, cnopts=cnopts)
                 srv.close()
                 #We have a success.
                 messageTitle = "Connection Test Succeeded!"
@@ -181,7 +187,8 @@ class db_backup(models.Model):
                     usernameLogin = rec.sftp_user
                     passwordLogin = rec.sftp_password
                     # Connect with external server over SFTP
-                    srv = pysftp.Connection(host=ipHost, username=usernameLogin, password=passwordLogin, port=portHost)
+                    srv = pysftp.Connection(host=ipHost, username=usernameLogin, password=passwordLogin,
+                                      port=portHost, cnopts=cnopts)
                     # set keepalive to prevent socket closed / connection dropped error
                     srv._transport.set_keepalive(30)
                     # Move to the correct directory on external server. If the user made a typo in his path with multiple slashes (/odoo//backups/) it will be fixed by this regex.
