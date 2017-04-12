@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteMappingsManager">
+    <list>
+      <list>
+        <remote-mappings server-id="python@docker-compose://[/home/somko/projects/auto_backup/docker-compose.yml]:odoo/python">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$/auto_backup" remote-root="/mnt/extra-addons/auto_backup" />
+            </list>
+          </settings>
+        </remote-mappings>
+      </list>
+    </list>
+  </component>
+</project>
