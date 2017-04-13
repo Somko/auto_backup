@@ -6,7 +6,6 @@ from backupstore import BackupStore
 import pysftp
 from odoo import tools
 
-
 cnopts = pysftp.CnOpts()
 cnopts.hostkeys = None
 
@@ -55,7 +54,7 @@ class SftpStore(BackupStore):
 
     def _get_srv(self):
         srv = pysftp.Connection(host=self.obj.host, username=self.obj.user, password=self.obj.password,
-                                port=self.obj.port, cnopts=cnopts)
+                                port=self.obj.sftp_port, cnopts=cnopts)
         srv._transport.set_keepalive(30)
         return srv
 

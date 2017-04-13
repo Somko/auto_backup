@@ -5,10 +5,19 @@ import time
 
 import requests
 from odoo import tools
-
 from local import LocalStore
-from samba import SambaStore
-from sftp import SftpStore
+
+possible_stores = {"samba": ('samba', 'Windows share'), "sftp": ('sftp', 'SFTP'), "local": ('local', 'Local')}
+try:
+    from samba import SambaStore
+except ImportError:
+    possible_stores.pop("samba")
+    print "WARNING: pysmb is not installed. Check project Dockerfile for installation commands!"
+try:
+    from sftp import SftpStore
+except ImportError:
+    possible_stores.pop("sftp")
+    print "WARNING: pysftp is not installed. Check project Dockerfile for installation commands!"
 
 tmp_folder = "/tmp/odoo/auto_backup"
 odoo_port = tools.config['xmlrpc_port']
@@ -16,7 +25,6 @@ odoo_host = "localhost" if tools.config['xmlrpc_interface'] == '' else tools.con
 
 
 class BackupManager:
-
     def __init__(self, obj):
         self.obj = obj
         self.db = obj._cr.dbname
@@ -29,7 +37,8 @@ class BackupManager:
             fullpath = os.path.join(self.folder, f)
             if os.path.isfile(fullpath):
                 store.upload(fullpath, self.obj.remote_path)
-                os.remove(fullpath)
+                if os.path.exists(fullpath):
+                    os.remove(fullpath)
         if self.obj.autoremove:
             store.cleanup(self.obj.remote_path, self.obj.days_to_keep)
 
@@ -48,7 +57,7 @@ class BackupManager:
         except:
             raise
         # Create name for dumpfile.
-        bkp_file = '%s_%s.%s' % (time.strftime('%d_%m_%Y_%H_%M_%S'),  self.db, self.obj.backup_type)
+        bkp_file = '%s_%s.%s' % (time.strftime('%d_%m_%Y_%H_%M_%S'), self.db, self.obj.backup_type)
         file_path = os.path.join(self.folder, bkp_file)
         uri = 'http://' + odoo_host + ':' + str(odoo_port)
         try:

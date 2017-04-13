@@ -12,47 +12,36 @@
                         <button name="test_backup" type="object" string="Test Backup" icon="fa-database"/>
                     </header>
                     <group>
-                        <field name="name"/>
-                        <field name="backup_type"/>
-                        <field name="store_type"/>
-                        <field name="autoremove"/>
-                        <field name="days_to_keep" attrs="{'invisible': [('autoremove','=',False)]}"/>
-                    </group>
-
-                    <group string="Local" attrs="{'invisible': [('store_type','!=', 'local')]}">
-                        <field name="remote_path" attrs="{'required':[('store_type', '=', 'local')]}"
-                               placeholder="For example: /odoo/backups/"/>
-                    </group>
-
-                    <group string="SFTP" attrs="{'invisible': [('store_type','!=', 'sftp')]}">
                         <div style="width:50%;border-radius:10px;margin: 10px 0px;padding:15px 10px 15px 10px;background-repeat: no-repeat;background-position: 10px center;color: #9F6000;background-color: #FEEFB3;">
-                            <b>Warning:</b> Use SFTP with caution! This writes files to external servers under the path you specify.
+                            <b>Warning:</b> If their are store options missing, please make sure you installed all correct python modules (pysftp and/or pysmb)
                         </div>
                         <div/>
                         <group>
-                            <field name="host"
-                                   attrs="{'required':[('store_type', '=', 'sftp')]}"/>
-                            <field name="sft_port" attrs="{'required':[('store_type', '=', 'sftp')]}"/>
-                            <field name="user" attrs="{'required':[('store_type', '=', 'sftp')]}"/>
-                            <field name="password" attrs="{'required':[('store_type', '=', 'sftp')]}" password="True"/>
-                            <field name="remote_path" attrs="{'required':[('store_type', '=', 'sftp')]}"
-                                   placeholder="For example: /odoo/backups/"/>
+                            <field name="name"/>
+                            <field name="backup_type"/>
+                            <field name="store_type"/>
+                            <field name="autoremove"/>
+                            <field name="days_to_keep" attrs="{'invisible': [('autoremove','=',False)]}"/>
                         </group>
                     </group>
 
-                    <group string="Windows Share" attrs="{'invisible': [('store_type','!=', 'samba')]}">
+                    <group col="1">
+                        <separator string="SFTP" attrs="{'invisible': [('store_type','!=', 'sftp')]}"/>
+                        <separator string="Local" attrs="{'invisible': [('store_type','!=', 'local')]}"/>
+                        <separator string="Windows Share" attrs="{'invisible': [('store_type','!=', 'samba')]}"/>
+                    </group>
+                    <group>
                         <group>
-                            <field name="host" attrs="{'required':[('store_type', '=', 'samba')]}"/>
-                            <field name="samba_port" attrs="{'required':[('store_type', '=', 'samba')]}"/>
-                            <field name="user" attrs="{'required':[('store_type', '=', 'samba')]}"/>
-                            <field name="password" attrs="{'required':[('store_type', '=', 'samba')]}" password="True"/>
-                            <field name="remote_path" attrs="{'required':[('store_type', '=', 'samba')]}"
-                                   placeholder="For example: /odoo/backups/"/>
-                            <field name="samba_domain" attrs="{'required':[('store_type', '=', 'samba')]}"/>
-                            <field name="samba_name" attrs="{'required':[('store_type', '=', 'samba')]}"/>
+                            <field name="host" attrs="{'required':[('store_type', 'in', ['sftp', 'samba'])], 'invisible': [('store_type','not in', ['sftp', 'samba'])]}"/>
+                            <field name="sftp_port" attrs="{'required':[('store_type', '=', 'sftp')], 'invisible': [('store_type','!=', 'sftp')]}"/>
+                            <field name="samba_port" attrs="{'required':[('store_type', '=', 'samba')], 'invisible': [('store_type','!=', 'samba')]}"/>
+                            <field name="user" attrs="{'required':[('store_type', 'in', ['sftp', 'samba'])], 'invisible': [('store_type','not in', ['sftp', 'samba'])]}"/>
+                            <field name="password" attrs="{'required':[('store_type', 'in', ['sftp', 'samba'])], 'invisible': [('store_type','not in', ['sftp', 'samba'])]}" password="True"/>
+                            <field name="remote_path" required="1" placeholder="For example: /odoo/backups/"/>
+                            <field name="samba_domain" attrs="{'required':[('store_type', '=', 'samba')], 'invisible': [('store_type','!=', 'samba')]}"/>
+                            <field name="samba_name" attrs="{'required':[('store_type', '=', 'samba')], 'invisible': [('store_type','!=', 'samba')]}"/>
                         </group>
                     </group>
-
 
                     <group string="Help">
                         <div>
@@ -70,9 +59,6 @@
                                     Set the scheduler to active and fill in how often you want backups generated.
                                 </li>
                             </ol>
-                            <p style="font-size:18px;">
-                                Need more help? <a href="mailto:yenthe.vanginneken@vanroey.be">Contact us!</a>
-                            </p>
                         </div>
                     </group>
                 </form>

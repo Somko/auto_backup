@@ -24,6 +24,7 @@ from odoo import models, fields, api, tools, _
 from odoo.exceptions import Warning
 
 from auto_backup.backup_manager import BackupManager
+from auto_backup.backup_manager.backup_manager import possible_stores
 
 
 class db_backup(models.Model):
@@ -32,7 +33,7 @@ class db_backup(models.Model):
     # Columns for local server configuration
     name = fields.Char(required=True, default="backup")
     backup_type = fields.Selection([('zip', 'Zip'), ('dump', 'Dump')], 'Backup Type', required=True, default='zip')
-    store_type = fields.Selection([('local', 'Local'), ('sftp', 'SFTP'), ('samba', 'Windows share')], default="local", required=True)
+    store_type = fields.Selection(possible_stores.values(), default="local", required=True)
     autoremove = fields.Boolean('Auto. Remove Backups', help='If you check this option you can choose to automaticly remove the backup after xx days')
 
     #common fields
@@ -41,14 +42,13 @@ class db_backup(models.Model):
                                   help="Choose after how many days the backup should be deleted. For example:\nIf you fill in 5 the backups will be removed after 5 days.",
                                   required=True)
     host = fields.Char('IP Address Server', help='The IP address from your remote server. For example 192.168.0.1')
-    user = fields.Char('Username SFTP Server',
-                       help='The username where the SFTP connection should be made with. This is the user on the external server.')
-    password = fields.Char('Password User SFTP Server',
-                           help='The password from the user where the SFTP connection should be made with. This is the password from the user on the external server.')
+    user = fields.Char('Username Server', help='The username where the connection should be made with. This is the user on the external server.')
+    password = fields.Char('Password User Server',
+                           help='The password from the user where the connection should be made with. This is the password from the user on the external server.')
 
-    sft_port = fields.Integer('Port', help='The port on the server that accepts SSH/SFTP calls.', default=22)
+    sftp_port = fields.Integer('Port', help='The port on the server that accepts SSH/SFTP calls.', default=22)
 
-    samba_domain = fields.Char("Domain/Workgroup")
+    samba_domain = fields.Char("Domain/Workgroup", default="WORKGROUP")
     samba_name = fields.Char("Share name")
     samba_port = fields.Integer("port", default=445)
 
