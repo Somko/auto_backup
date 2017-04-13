@@ -23,8 +23,8 @@
 from openerp import models, fields, api, tools, _
 from openerp.exceptions import Warning
 
-from auto_backup.backup_manager import BackupManager
-from auto_backup.backup_manager.backup_manager import possible_stores
+from backup_manager import BackupManager
+from backup_manager.backup_manager import possible_stores
 
 
 class db_backup(models.Model):
