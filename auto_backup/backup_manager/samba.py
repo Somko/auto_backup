@@ -53,7 +53,7 @@ class SambaStore(BackupStore):
     def _create_dir(self, conn, dir):
         current_path = ""
         for sub_dir in dir.replace("\\", "/").split("/"):
-            if sub_dir not in conn.listPath(self.obj.samba_name, current_path):
+            if sub_dir not in [file.filename for file in conn.listPath(self.obj.samba_name, current_path) if file.isDirectory]:
                 if sub_dir != "":
                     current_path += sub_dir + "/"
                 if current_path != "":
