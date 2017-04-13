@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_backup_conf_form">
+            <field name="name">Configure Backup</field>
+            <field name="model">db.backup</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Test">
+                    <header>
+                        <button name="test_connection" type="object" class="btn-primary" string="Test Connection" icon="fa-television"/>
+                        <button name="test_backup" type="object" string="Test Backup" icon="fa-database"/>
+                    </header>
+                    <group>
+                        <div style="width:50%;border-radius:10px;margin: 10px 0px;padding:15px 10px 15px 10px;background-repeat: no-repeat;background-position: 10px center;color: #9F6000;background-color: #FEEFB3;">
+                            <b>Warning:</b> If their are store options missing, please make sure you installed all correct python modules (pysftp and/or pysmb)
+                        </div>
+                        <div/>
+                        <group>
+                            <field name="name"/>
+                            <field name="backup_type"/>
+                            <field name="store_type"/>
+                            <field name="autoremove"/>
+                            <field name="days_to_keep" attrs="{'invisible': [('autoremove','=',False)]}"/>
+                        </group>
+                    </group>
+
+                    <group col="1">
+                        <separator string="SFTP" attrs="{'invisible': [('store_type','!=', 'sftp')]}"/>
+                        <separator string="Local" attrs="{'invisible': [('store_type','!=', 'local')]}"/>
+                        <separator string="Windows Share" attrs="{'invisible': [('store_type','!=', 'samba')]}"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="host" attrs="{'required':[('store_type', 'in', ['sftp', 'samba'])], 'invisible': [('store_type','not in', ['sftp', 'samba'])]}"/>
+                            <field name="sftp_port" attrs="{'required':[('store_type', '=', 'sftp')], 'invisible': [('store_type','!=', 'sftp')]}"/>
+                            <field name="samba_port" attrs="{'required':[('store_type', '=', 'samba')], 'invisible': [('store_type','!=', 'samba')]}"/>
+                            <field name="user" attrs="{'required':[('store_type', 'in', ['sftp', 'samba'])], 'invisible': [('store_type','not in', ['sftp', 'samba'])]}"/>
+                            <field name="password" attrs="{'required':[('store_type', 'in', ['sftp', 'samba'])], 'invisible': [('store_type','not in', ['sftp', 'samba'])]}" password="True"/>
+                            <field name="remote_path" required="1" placeholder="For example: /odoo/backups/"/>
+                            <field name="samba_domain" attrs="{'required':[('store_type', '=', 'samba')], 'invisible': [('store_type','!=', 'samba')]}"/>
+                            <field name="samba_name" attrs="{'required':[('store_type', '=', 'samba')], 'invisible': [('store_type','!=', 'samba')]}"/>
+                        </group>
+                    </group>
+
+                    <group string="Help">
+                        <div>
+                            This configures the scheduler for automatic backup of the given database running on given host at given port on regular intervals.
+                            <br/>
+                            Automatic backups of the database can be scheduled as follows:
+                            <ol>
+                                <li>
+                                    Go to Settings / Technical / Automation / Scheduled Actions.
+                                </li>
+                                <li>
+                                    Search the action named 'Backup scheduler'.
+                                </li>
+                                <li>
+                                    Set the scheduler to active and fill in how often you want backups generated.
+                                </li>
+                            </ol>
+                        </div>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_backup_conf_tree">
+            <field name="name">Configure Backup</field>
+            <field name="model">db.backup</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Backups">
+                    <field name="name"/>
+                    <field name="backup_type"/>
+                    <field name="autoremove"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_backup_conf_form">
+            <field name="name">Configure backup</field>
+            <field name="res_model">db.backup</field>
+            <field name="view_type">form</field>
+            <field name='view_mode'>tree,form</field>
+            <field name='view_id' ref='view_backup_conf_tree'/>
+        </record>
+
+        <menuitem id="auto_backup_menu" name="Back-ups" parent="base.menu_custom"/>
+        <menuitem parent="auto_backup_menu" action="action_backup_conf_form" id="backup_conf_menu"/>
+    </data>
+</odoo>
