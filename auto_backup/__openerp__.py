@@ -2,7 +2,7 @@
 {
     'name' : 'Database Auto-Backup',
     'version' : '10.0',
-    'author' : 'Somko - VanRoey.be - Yenthe Van Ginneken',
+    'author' : 'Somko',
     'website' : 'https://somko.be/',
     'category' : 'Generic Modules',
     'summary': 'Backups',
