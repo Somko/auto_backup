@@ -24,18 +24,22 @@ class BackupManager:
 
     def backup_db(self):
         self._get_backup_file()
-        store = self._get_store()
+        store = self.get_store()
         for f in os.listdir(self.folder):
             fullpath = os.path.join(self.folder, f)
             if os.path.isfile(fullpath):
                 store.upload(fullpath, self.obj.remote_path)
                 os.remove(fullpath)
-        if self.obj.autoremove and self.obj.days_to_keep > 0:
+        if self.obj.autoremove:
             store.cleanup(self.obj.remote_path, self.obj.days_to_keep)
 
-    def _get_store(self):
+    def get_store(self):
         if self.obj.store_type == "sftp":
             return SftpStore(self.obj)
+        elif self.obj.store_type == "samba":
+            return SambaStore(self.obj)
+        else:
+            return LocalStore(self.obj)
 
     def _get_backup_file(self):
         try:

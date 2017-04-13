@@ -7,6 +7,10 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Test">
+                    <header>
+                        <button name="test_connection" type="object" class="btn-primary" string="Test Connection" icon="fa-television"/>
+                        <button name="test_backup" type="object" string="Test Backup" icon="fa-database"/>
+                    </header>
                     <group>
                         <field name="name"/>
                         <field name="backup_type"/>
@@ -15,8 +19,9 @@
                         <field name="days_to_keep" attrs="{'invisible': [('autoremove','=',False)]}"/>
                     </group>
 
-                    <group string="Local">
-
+                    <group string="Local" attrs="{'invisible': [('store_type','!=', 'local')]}">
+                        <field name="remote_path" attrs="{'required':[('store_type', '=', 'local')]}"
+                               placeholder="For example: /odoo/backups/"/>
                     </group>
 
                     <group string="SFTP" attrs="{'invisible': [('store_type','!=', 'sftp')]}">
@@ -25,13 +30,26 @@
                         </div>
                         <div/>
                         <group>
-                            <field name="sftp_host"
+                            <field name="host"
                                    attrs="{'required':[('store_type', '=', 'sftp')]}"/>
-                            <field name="sftp_port" attrs="{'required':[('store_type', '=', 'sftp')]}"/>
-                            <field name="sftp_user" attrs="{'required':[('store_type', '=', 'sftp')]}"/>
-                            <field name="sftp_password" attrs="{'required':[('store_type', '=', 'sftp')]}" password="True"/>
-                            <field name="remote_path" attrs="{'required':[('store_type', '=', 'sftp')]}" placeholder="For example: /odoo/backups/"/>
-                            <button name="test_sftp_connection" type="object" string="Test SFTP Connection" icon="fa-television"/>
+                            <field name="sft_port" attrs="{'required':[('store_type', '=', 'sftp')]}"/>
+                            <field name="user" attrs="{'required':[('store_type', '=', 'sftp')]}"/>
+                            <field name="password" attrs="{'required':[('store_type', '=', 'sftp')]}" password="True"/>
+                            <field name="remote_path" attrs="{'required':[('store_type', '=', 'sftp')]}"
+                                   placeholder="For example: /odoo/backups/"/>
+                        </group>
+                    </group>
+
+                    <group string="Windows Share" attrs="{'invisible': [('store_type','!=', 'samba')]}">
+                        <group>
+                            <field name="host" attrs="{'required':[('store_type', '=', 'samba')]}"/>
+                            <field name="samba_port" attrs="{'required':[('store_type', '=', 'samba')]}"/>
+                            <field name="user" attrs="{'required':[('store_type', '=', 'samba')]}"/>
+                            <field name="password" attrs="{'required':[('store_type', '=', 'samba')]}" password="True"/>
+                            <field name="remote_path" attrs="{'required':[('store_type', '=', 'samba')]}"
+                                   placeholder="For example: /odoo/backups/"/>
+                            <field name="samba_domain" attrs="{'required':[('store_type', '=', 'samba')]}"/>
+                            <field name="samba_name" attrs="{'required':[('store_type', '=', 'samba')]}"/>
                         </group>
                     </group>
 

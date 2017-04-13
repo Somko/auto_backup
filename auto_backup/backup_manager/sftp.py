@@ -48,14 +48,14 @@ class SftpStore(BackupStore):
             message_content = "Everything seems properly set up for FTP back-ups!"
         except Exception, e:
             message_title = "Connection Test Failed!"
-            if len(self.obj.sftp_host) < 8:
+            if len(self.obj.host) < 8:
                 message_content += "\nYour IP address seems to be too short.\n"
             message_content += "Here is what we got instead:\n" + tools.ustr(e)
         return message_title, message_content
 
     def _get_srv(self):
-        srv = pysftp.Connection(host=self.obj.sftp_host, username=self.obj.sftp_user, password=self.obj.sftp_password,
-                                port=self.obj.sftp_port, cnopts=cnopts)
+        srv = pysftp.Connection(host=self.obj.host, username=self.obj.user, password=self.obj.password,
+                                port=self.obj.port, cnopts=cnopts)
         srv._transport.set_keepalive(30)
         return srv
 
