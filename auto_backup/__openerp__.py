@@ -8,6 +8,7 @@
     'summary': 'Backups',
     'description': "",
     'depends' : ['base'],
+    'license': "LGPL Version 3",
     'data': [
       'views/bkp_conf_view.xml',
       'data/backup_data.xml',
