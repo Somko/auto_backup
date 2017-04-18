@@ -67,7 +67,7 @@ class db_backup(models.Model):
             raise Warning(_("Something went terribly wrong: " + tools.ustr(e)))
         raise Warning(_("Backup seems to have worked, up to you to validate!"))
 
-    @api.multi
+    @api.model
     def schedule_backup(self):
         conf_ids = self.search([])
         for conf in conf_ids:
